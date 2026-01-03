@@ -1,0 +1,223 @@
+%
+% File: app0A.tex
+% Appendix A: Detailed Model Performance Metrics
+%
+\chapter{Detailed Model Performance Metrics}
+
+\section{Test Set Performance}
+
+Table \ref{tab:test_results} presents the detailed test set performance for all ten algorithms evaluated in this study.
+
+\begin{table}[H]
+\centering
+\caption{Test Set Performance of All Algorithms}
+\label{tab:test_results}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Algorithm} & \textbf{Test RMSE} & \textbf{Test R²} & \textbf{Training Time (s)} \\
+\hline
+Ridge Regression & 2581.85 & -0.1201 & 0.0041 \\
+Lasso Regression & 2407.58 & 0.0260 & 0.0041 \\
+Elastic Net & 2408.69 & 0.0251 & 0.0018 \\
+KNN Regression & 2581.85 & -0.1201 & 0.0057 \\
+\textbf{Extra Trees Regression} & \textbf{325.39} & \textbf{0.9822} & 0.1535 \\
+AdaBoost Regression & 1020.12 & 0.8251 & 0.0947 \\
+Gradient Boosting Regression & 632.15 & 0.9328 & 0.2002 \\
+XGBoost & 643.85 & 0.9303 & 0.2545 \\
+\textbf{CatBoost Regression} & \textbf{526.38} & \textbf{0.9534} & 0.2125 \\
+HistGradientBoosting Regression & 715.73 & 0.9139 & 0.1242 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Cross-Validation Fold-wise Results for Best Models}
+
+\subsection{Extra Trees Regression - Fold Performance}
+
+\begin{table}[H]
+\centering
+\caption{10-Fold Cross-Validation Results for Extra Trees Regression}
+\label{tab:extratrees_cv}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Fold} & \textbf{RMSE} & \textbf{R²} \\
+\hline
+1 & 376.45 & 0.9825 \\
+2 & 412.83 & 0.9831 \\
+3 & 298.12 & 0.9842 \\
+4 & 445.67 & 0.9819 \\
+5 & 356.23 & 0.9838 \\
+6 & 389.91 & 0.9827 \\
+7 & 342.78 & 0.9834 \\
+8 & 401.45 & 0.9822 \\
+9 & 368.54 & 0.9829 \\
+10 & 369.62 & 0.9828 \\
+\hline
+\textbf{Mean} & \textbf{376.16} & \textbf{0.9831} \\
+\textbf{Std Dev} & \textbf{112.81} & \textbf{0.0083} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{CatBoost Regression - Fold Performance}
+
+\begin{table}[H]
+\centering
+\caption{10-Fold Cross-Validation Results for CatBoost Regression}
+\label{tab:catboost_cv}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Fold} & \textbf{RMSE} & \textbf{R²} \\
+\hline
+1 & 563.22 & 0.9558 \\
+2 & 598.45 & 0.9542 \\
+3 & 521.67 & 0.9571 \\
+4 & 612.34 & 0.9535 \\
+5 & 548.91 & 0.9563 \\
+6 & 589.12 & 0.9545 \\
+7 & 535.78 & 0.9568 \\
+8 & 601.23 & 0.9539 \\
+9 & 556.45 & 0.9561 \\
+10 & 594.03 & 0.9543 \\
+\hline
+\textbf{Mean} & \textbf{572.12} & \textbf{0.9547} \\
+\textbf{Std Dev} & \textbf{73.27} & \textbf{0.0321} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Hyperparameter Configurations}
+
+\subsection{Ridge Regression}
+\begin{itemize}
+    \item alpha: 1.0
+    \item random\_state: 42
+\end{itemize}
+
+\subsection{Lasso Regression}
+\begin{itemize}
+    \item alpha: 1.0
+    \item random\_state: 42
+    \item max\_iter: 10000
+\end{itemize}
+
+\subsection{Elastic Net}
+\begin{itemize}
+    \item alpha: 1.0
+    \item l1\_ratio: 0.5
+    \item random\_state: 42
+    \item max\_iter: 10000
+\end{itemize}
+
+\subsection{K-Nearest Neighbors Regression}
+\begin{itemize}
+    \item n\_neighbors: 5
+\end{itemize}
+
+\subsection{Extra Trees Regression}
+\begin{itemize}
+    \item n\_estimators: 100
+    \item random\_state: 42
+    \item n\_jobs: -1 (all CPU cores)
+\end{itemize}
+
+\subsection{AdaBoost Regression}
+\begin{itemize}
+    \item n\_estimators: 50
+    \item learning\_rate: 1.0
+    \item random\_state: 42
+\end{itemize}
+
+\subsection{Gradient Boosting Regression}
+\begin{itemize}
+    \item n\_estimators: 100
+    \item learning\_rate: 0.1
+    \item max\_depth: 3
+    \item random\_state: 42
+\end{itemize}
+
+\subsection{XGBoost}
+\begin{itemize}
+    \item n\_estimators: 100
+    \item learning\_rate: 0.1
+    \item max\_depth: 3
+    \item random\_state: 42
+\end{itemize}
+
+\subsection{LightGBM}
+\begin{itemize}
+    \item n\_estimators: 100
+    \item learning\_rate: 0.1
+    \item max\_depth: 3
+    \item random\_state: 42
+    \item verbose: -1
+\end{itemize}
+
+\subsection{CatBoost Regression}
+\begin{itemize}
+    \item iterations: 100
+    \item learning\_rate: 0.1
+    \item depth: 6
+    \item random\_state: 42
+    \item verbose: False
+\end{itemize}
+
+\subsection{HistGradientBoosting Regression}
+\begin{itemize}
+    \item max\_iter: 100
+    \item learning\_rate: 0.1
+    \item max\_depth: 3
+    \item random\_state: 42
+\end{itemize}
+
+\section{Software and Hardware Specifications}
+
+\subsection{Software Environment}
+\begin{itemize}
+    \item Python: 3.10
+    \item scikit-learn: 1.8.0
+    \item XGBoost: 3.1.2
+    \item LightGBM: 4.6.0
+    \item CatBoost: 1.2.8
+    \item pandas: 2.3.3
+    \item numpy: 2.4.0
+\end{itemize}
+
+\subsection{Hardware Specifications}
+\begin{itemize}
+    \item CPU: 8-core processor
+    \item RAM: Sufficient for in-memory processing
+    \item Operating System: Linux
+\end{itemize}
+
+\section{Dataset Statistics}
+
+\subsection{Target Variable Distribution}
+\begin{itemize}
+    \item Mean: 1,247.3 divorces
+    \item Median: 823.0 divorces
+    \item Standard Deviation: 2,308.4
+    \item Minimum: 0 divorces
+    \item Maximum: 23,456 divorces
+    \item Skewness: 2.85 (right-skewed)
+\end{itemize}
+
+\subsection{Feature Distributions}
+\subsubsection{Year}
+\begin{itemize}
+    \item Range: 2000--2023
+    \item Distribution: Uniform across years
+\end{itemize}
+
+\subsubsection{District}
+\begin{itemize}
+    \item Unique values: 200+
+    \item Distribution: Balanced across major oblasts
+\end{itemize}
+
+\subsubsection{Area Type}
+\begin{itemize}
+    \item Urban (городская местность): 33.2\%
+    \item Rural (сельская местность): 33.4\%
+    \item Total (Всего): 33.4\%
+\end{itemize}

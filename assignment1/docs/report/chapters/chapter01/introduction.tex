@@ -1,0 +1,70 @@
+%
+% File: introduction.tex
+% Chapter 1: Introduction
+%
+\chapter{Introduction}
+\label{chap:intro}
+\setlength{\parskip}{1em}
+
+\section{Background and Motivation}
+
+Divorce rates have emerged as a critical social indicator across modern societies, reflecting complex interactions between economic development, cultural shifts, and individual life choices. Kazakhstan, having undergone significant socioeconomic transformation since independence in 1991, presents a unique case study for understanding divorce dynamics in a rapidly modernizing Central Asian nation. The divorce rate in Kazakhstan has shown considerable regional variation, with urban areas experiencing different patterns compared to rural regions, necessitating sophisticated analytical approaches to understand and predict these trends \cite{tillekova2020marriage}.
+
+Machine learning has revolutionized predictive analytics across numerous domains, offering powerful tools for uncovering non-linear relationships and complex patterns in social science data. The application of regression algorithms to demographic and social statistics has gained substantial traction in recent years, particularly for forecasting family dynamics, population trends, and social policy outcomes \cite{abadie2020statistical}. However, comprehensive comparative studies evaluating multiple regression algorithms on Central Asian divorce statistics remain limited, creating a significant gap in the literature.
+
+The ability to accurately predict divorce trends carries important implications for social policy planning, resource allocation for family support services, and understanding the broader social fabric of Kazakhstan society. Regional differences in divorce patterns may reflect varying levels of economic development, urbanization, access to education, and cultural norms across Kazakhstan's diverse geographical landscape \cite{agadjanian2021divorce}.
+
+\section{Problem Statement}
+
+Despite the availability of extensive divorce statistics data in Kazakhstan, there exists a critical need for systematic analysis using modern machine learning techniques to:
+
+\begin{enumerate}
+    \item Identify which regression algorithms provide the most accurate predictions for divorce statistics based on regional and temporal characteristics
+    \item Understand the underlying patterns and relationships between geographical location, area type (urban/rural/total), temporal factors, and divorce rates
+    \item Evaluate the comparative performance of traditional linear regression methods versus contemporary ensemble and boosting techniques in this specific domain
+    \item Provide evidence-based recommendations for policymakers regarding which analytical approaches yield the most reliable insights for social planning
+\end{enumerate}
+
+The fundamental research question addressed in this study is: \textit{Which machine learning regression algorithms demonstrate superior performance in predicting divorce statistics across Kazakhstan's regions, and what do these results reveal about the underlying data structure?}
+
+\section{Research Objectives}
+
+This study aims to achieve the following specific objectives:
+
+\begin{enumerate}
+    \item Conduct a comprehensive evaluation of ten distinct regression algorithms on Kazakhstan divorce statistics, including Ridge, Lasso, Elastic Net, K-Nearest Neighbors (KNN), Extra Trees, AdaBoost, Gradient Boosting, XGBoost, LightGBM, CatBoost, and HistGradientBoosting
+    \item Apply rigorous 10-fold cross-validation methodology to ensure robust and generalizable performance assessment
+    \item Analyze the comparative strengths and weaknesses of linear versus tree-based ensemble methods in capturing divorce prediction patterns
+    \item Identify the most effective algorithm configuration for this specific application domain based on RMSE and R² metrics
+    \item Provide insights into feature importance and data characteristics that influence model performance
+    \item Contribute to the broader understanding of machine learning applications in social science research within the Central Asian context
+\end{enumerate}
+
+\section{Significance of the Study}
+
+This research makes several important contributions to both theoretical and practical domains:
+
+\textbf{Methodological Contribution:} This study represents one of the first comprehensive comparative analyses of modern machine learning regression algorithms applied specifically to divorce statistics in Kazakhstan. By systematically evaluating ten different algorithms under consistent experimental conditions, we provide a robust methodological framework for social science prediction tasks.
+
+\textbf{Policy Relevance:} The findings offer actionable insights for government agencies, non-governmental organizations, and social service providers in Kazakhstan. Accurate divorce trend predictions enable better resource planning for family counseling services, legal aid programs, and social support systems tailored to regional needs.
+
+\textbf{Academic Value:} The research contributes to the growing body of literature on machine learning applications in demography and social statistics, particularly in under-researched Central Asian contexts. The comparative nature of the study helps establish best practices for similar analyses in other post-Soviet states undergoing comparable socioeconomic transitions.
+
+\textbf{Technical Innovation:} By demonstrating the superior performance of ensemble tree-based methods over traditional linear regression approaches, this study highlights the importance of selecting appropriate algorithmic approaches for social data exhibiting non-linear characteristics.
+
+\section{Scope and Limitations}
+
+This study focuses on divorce statistics from Kazakhstan covering the period 2000-2023, encompassing 8,458 records across multiple regions and area types. The geographical scope includes all major oblasts (regions) of Kazakhstan, with data segmented by urban areas, rural areas, and total regional statistics. The temporal scope captures nearly two decades of divorce trends, allowing for analysis of both short-term fluctuations and long-term patterns.
+
+However, several limitations should be acknowledged:
+
+\begin{itemize}
+    \item The study focuses exclusively on quantitative prediction accuracy and does not incorporate qualitative factors such as cultural attitudes, religious influences, or individual relationship dynamics
+    \item The feature set is limited to geographical location, area type, and temporal information, without including potentially relevant socioeconomic variables such as income levels, education rates, or employment statistics
+    \item The analysis employs default or minimally tuned hyperparameters for each algorithm, leaving room for further optimization through extensive hyperparameter search
+    \item The dataset represents aggregate regional statistics rather than individual-level data, potentially obscuring micro-level patterns and relationships
+\end{itemize}
+
+\section{Structure of the Article}
+
+The remainder of this article is organized as follows: Chapter 2 presents a comprehensive literature review examining recent developments in machine learning applications for demographic prediction, regression algorithm comparisons, and divorce trend analysis. Chapter 3 details the materials and methods, including dataset characteristics, feature engineering approaches, algorithm configurations, and evaluation methodology. Chapter 4 presents the results and provides in-depth discussion of findings, comparative algorithm performance, and practical implications. Finally, the conclusion synthesizes key findings, acknowledges limitations, and proposes directions for future research.

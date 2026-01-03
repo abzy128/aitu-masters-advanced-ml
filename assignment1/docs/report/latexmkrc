@@ -1,0 +1,12 @@
+# latexmk configuration for this repository
+
+# Put all build artifacts into ./out/
+$out_dir = 'out';
+$aux_dir = 'out';
+
+# Default target when running `latexmk` with no args
+@default_files = ('memoirthesis.tex');
+
+# Build PDF via pdflatex (adjust if you switch engines)
+$pdf_mode = 1;
+$pdflatex = 'pdflatex -synctex=1 -interaction=nonstopmode -file-line-error %O %S';

@@ -1,0 +1,255 @@
+%
+% File: chapter02.tex
+% Chapter 2: Literature Review and Materials & Methods
+%
+\chapter{Literature Review}
+\label{chap:literature}
+\setlength{\parskip}{1em}
+
+\section{Machine Learning in Demographic Prediction}
+
+The application of machine learning algorithms to demographic and social statistics has experienced remarkable growth over the past decade. Recent studies have demonstrated the superiority of ensemble methods over traditional statistical approaches for population forecasting, migration prediction, and family dynamics analysis \cite{bijak2019machine}. Alpaydin (2020) provides a comprehensive overview of machine learning fundamentals, emphasizing the importance of algorithm selection based on data characteristics and problem domain \cite{alpaydin2020introduction}.
+
+In the context of divorce prediction specifically, traditional logistic regression and survival analysis methods have gradually been supplemented by more sophisticated machine learning approaches. Yildirim and Ozkaya (2020) successfully applied decision trees and support vector machines to predict divorce based on the Gottman Couples Therapy dataset, achieving accuracy rates exceeding 95\% \cite{yildirim2020divorce}. Their work demonstrated that non-linear relationships captured by tree-based models significantly outperform linear assumptions inherent in classical statistical methods.
+
+Recent advances in gradient boosting machines have revolutionized predictive modeling across numerous domains. Chen and Guestrin's (2016) introduction of XGBoost established new benchmarks for structured data prediction tasks \cite{chen2016xgboost}. Subsequent developments including LightGBM \cite{ke2017lightgbm} and CatBoost \cite{prokhorenkova2018catboost} have further refined boosting techniques, offering improved handling of categorical features and reduced overfitting through sophisticated regularization schemes.
+
+\section{Comparative Studies of Regression Algorithms}
+
+Comparative analysis of machine learning algorithms has become a critical research area, helping practitioners understand which methods excel under specific conditions. Fern\'andez-Delgado et al. (2014) conducted one of the most comprehensive comparative studies, evaluating 179 classifiers across 121 datasets, finding that random forests and boosting methods consistently ranked among the top performers \cite{fernandez2014we}. While their study focused on classification, the principles extend to regression tasks.
+
+More recent work by Borisov et al. (2022) specifically examined deep learning versus tree-based models on tabular data, concluding that gradient-boosted decision trees remain the gold standard for structured datasets, particularly when sample sizes are moderate and feature engineering is well-executed \cite{borisov2022deep}. This finding holds particular relevance for social science applications where datasets typically contain structured tabular information with relatively limited sample sizes compared to domains like computer vision or natural language processing.
+
+Regularization techniques embodied in Ridge, Lasso, and Elastic Net regression have demonstrated effectiveness in high-dimensional settings with multicollinearity \cite{hastie2009elements}. However, their linear assumptions may prove restrictive when underlying relationships exhibit non-linear patterns, as frequently observed in social and demographic data.
+
+\section{Divorce Trends and Predictive Analytics}
+
+Divorce research has increasingly incorporated quantitative predictive methods to complement traditional sociological and psychological approaches. Gottman and Levenson's (2000) longitudinal studies established foundations for identifying predictive factors in marital dissolution \cite{gottman2000decade}, which have subsequently been enhanced through machine learning applications.
+
+Studies specific to post-Soviet contexts reveal unique divorce dynamics shaped by rapid socioeconomic transition. Agadjanian and Lacy (2021) examined marriage and divorce patterns in Kazakhstan, identifying urbanization, education, and ethnic composition as significant predictors of divorce prevalence \cite{agadjanian2021divorce}. Their qualitative insights provide valuable context for quantitative prediction models.
+
+The integration of geospatial and temporal dimensions in demographic analysis has gained prominence. Recent work by Aral and Nicolaides (2017) demonstrated that incorporating spatial and network effects substantially improves prediction accuracy for social phenomena \cite{aral2017exercise}. This perspective supports the inclusion of regional and temporal features in divorce prediction models.
+
+\section{Ensemble Methods and Boosting Algorithms}
+
+Ensemble learning techniques, which combine multiple base learners to improve predictive performance, have demonstrated consistent success across diverse applications. Breiman's (2001) Random Forest algorithm introduced controlled randomness to reduce correlation among trees while maintaining individual tree strength \cite{breiman2001random}. Extra Trees, proposed by Geurts et al. (2006), extends this concept by introducing additional randomization in split point selection, often yielding faster training and competitive accuracy \cite{geurts2006extremely}.
+
+Boosting algorithms construct ensembles sequentially, with each new learner focusing on correcting errors made by previous ones. AdaBoost, introduced by Freund and Schapire (1997), pioneered this adaptive approach \cite{freund1997decision}. Modern gradient boosting implementations including XGBoost, LightGBM, CatBoost, and HistGradientBoosting have refined the methodology through improved computational efficiency, advanced regularization, and sophisticated handling of categorical variables.
+
+\section{Research Gap}
+
+While individual algorithm applications to social prediction tasks exist, comprehensive comparative studies specifically targeting divorce statistics in Central Asian contexts remain scarce. Most existing research focuses on Western European or North American datasets, potentially limiting generalizability to post-Soviet societies with distinct cultural and socioeconomic characteristics. Furthermore, systematic comparisons across the full spectrum from linear regression to state-of-the-art boosting methods, using consistent evaluation protocols, are notably absent in the literature.
+
+This study addresses these gaps by providing rigorous comparative analysis of ten regression algorithms on Kazakhstan-specific divorce data, offering insights valuable for both methodological advancement and practical application in social policy planning.
+
+\chapter{Materials and Methods}
+\label{chap:methods}
+\setlength{\parskip}{1em}
+
+\section{Dataset Description}
+
+The dataset employed in this study comprises divorce statistics from Kazakhstan, obtained from official statistical records covering the period from 2000 to 2023. The dataset contains 8,458 records representing divorce counts across various administrative regions (oblasts) and area classifications.
+
+\subsection{Data Structure}
+
+Each record in the dataset contains the following attributes:
+
+\begin{itemize}
+    \item \textbf{District}: Administrative region or oblast name (categorical variable with approximately 200+ unique values including major regions such as Almaty Oblast, Astana City, Akmola Oblast, etc.)
+    \item \textbf{Area}: Classification of geographical area type with three categories:
+    \begin{itemize}
+        \item Городская местность (Urban areas)
+        \item Сельская местность (Rural areas)  
+        \item Всего (Total - aggregate of urban and rural)
+    \end{itemize}
+    \item \textbf{Year}: Temporal indicator in format "YYYY год" spanning 2000-2023
+    \item \textbf{Number}: Target variable representing the count of registered divorces (continuous numerical value)
+\end{itemize}
+
+\subsection{Data Characteristics}
+
+The dataset exhibits several important characteristics relevant to algorithm selection and evaluation:
+
+\begin{enumerate}
+    \item \textbf{Temporal Coverage}: Nearly quarter-century span (2000-2023) captures long-term trends, business cycles, and societal changes
+    \item \textbf{Geographical Diversity}: Comprehensive coverage of Kazakhstan's regions reflects diverse urbanization levels, economic development, and cultural contexts
+    \item \textbf{Hierarchical Structure}: Inclusion of urban, rural, and total statistics creates inherent correlations in the data
+    \item \textbf{Missing Values}: Initial analysis revealed minimal missing values, primarily in recent years for specific regions
+    \item \textbf{Distribution}: Target variable (divorce counts) exhibits right-skewed distribution with substantial variance across regions
+\end{enumerate}
+
+\section{Data Preprocessing}
+
+\subsection{Data Cleaning}
+
+The preprocessing pipeline implemented the following steps:
+
+\begin{enumerate}
+    \item \textbf{Index Column Removal}: Removal of unnamed index column generated during data export
+    \item \textbf{Missing Value Treatment}: Records with missing target values were removed from the dataset, resulting in negligible data loss
+    \item \textbf{Year Extraction}: Numeric year values extracted from text format using regular expression parsing: "2019 год" $\rightarrow$ 2019
+    \item \textbf{Data Type Validation}: Verification of appropriate data types for each column, converting where necessary
+\end{enumerate}
+
+\subsection{Feature Engineering}
+
+Given the limited feature set in the raw data, comprehensive feature engineering was critical for model performance. The following transformations were applied:
+
+\subsubsection{Numerical Year Feature}
+The year attribute was transformed from Russian-language text format to numeric representation, enabling models to capture temporal trends and patterns.
+
+\subsubsection{District Encoding}
+Due to high cardinality (200+ unique values) and nominal nature of district names, label encoding was employed:
+\begin{equation}
+    \text{district\_encoded} = \text{LabelEncoder}(\text{District})
+\end{equation}
+This approach assigns each unique district a numeric identifier, preserving district information in a format suitable for tree-based models while avoiding the dimensionality explosion that would result from one-hot encoding.
+
+\subsubsection{Area Type Encoding}
+The three-category area type variable was one-hot encoded to create binary indicator features:
+\begin{align}
+    \text{is\_urban} &= \begin{cases} 1 & \text{if Area = городская местность} \\ 0 & \text{otherwise} \end{cases} \\
+    \text{is\_rural} &= \begin{cases} 1 & \text{if Area = сельская местность} \\ 0 & \text{otherwise} \end{cases} \\
+    \text{is\_total} &= \begin{cases} 1 & \text{if Area = Всего} \\ 0 & \text{otherwise} \end{cases}
+\end{align}
+
+All three indicator variables were retained to avoid any assumption about a reference category, allowing models full flexibility in learning area-specific patterns.
+
+\subsubsection{Final Feature Set}
+The engineered feature matrix comprised five features: year (continuous), district\_encoded (categorical), is\_urban (binary), is\_rural (binary), and is\_total (binary).
+
+\section{Train-Test Split}
+
+To ensure reproducible and unbiased evaluation, the dataset was split into training and testing sets using stratified random sampling:
+
+\begin{itemize}
+    \item \textbf{Training Set}: 80\% of data (6,766 samples)
+    \item \textbf{Test Set}: 20\% of data (1,692 samples)
+    \item \textbf{Random State}: Fixed at 42 for reproducibility
+    \item \textbf{Stratification}: Not applied due to continuous target variable
+\end{itemize}
+
+This split ensures sufficient data for model training while reserving adequate samples for independent performance assessment.
+
+\section{Feature Scaling}
+
+For algorithms sensitive to feature magnitudes (Ridge, Lasso, Elastic Net, KNN), standardization was applied:
+
+\begin{equation}
+    x_{scaled} = \frac{x - \mu}{\sigma}
+\end{equation}
+
+where $\mu$ represents the feature mean and $\sigma$ the standard deviation, both computed on the training set only. The same transformation was subsequently applied to the test set to prevent data leakage.
+
+Tree-based ensemble methods (Extra Trees, AdaBoost, Gradient Boosting, XGBoost, LightGBM, CatBoost, HistGradientBoosting) operated on non-scaled features, as these algorithms are inherently invariant to monotonic transformations.
+
+\section{Algorithms Evaluated}
+
+This study systematically evaluated ten regression algorithms representing diverse methodological approaches:
+
+\subsection{Linear Regression with Regularization}
+
+\subsubsection{Ridge Regression}
+Ridge regression applies L2 regularization to prevent overfitting:
+\begin{equation}
+    \min_{\beta} \sum_{i=1}^{n}(y_i - X_i\beta)^2 + \alpha\sum_{j=1}^{p}\beta_j^2
+\end{equation}
+Hyperparameter: $\alpha = 1.0$
+
+\subsubsection{Lasso Regression}
+Lasso employs L1 regularization, promoting sparsity:
+\begin{equation}
+    \min_{\beta} \sum_{i=1}^{n}(y_i - X_i\beta)^2 + \alpha\sum_{j=1}^{p}|\beta_j|
+\end{equation}
+Hyperparameters: $\alpha = 1.0$, max\_iter = 10,000
+
+\subsubsection{Elastic Net}
+Elastic Net combines L1 and L2 penalties:
+\begin{equation}
+    \min_{\beta} \sum_{i=1}^{n}(y_i - X_i\beta)^2 + \alpha\rho\sum_{j=1}^{p}|\beta_j| + \frac{\alpha(1-\rho)}{2}\sum_{j=1}^{p}\beta_j^2
+\end{equation}
+Hyperparameters: $\alpha = 1.0$, $\rho = 0.5$, max\_iter = 10,000
+
+\subsection{Instance-Based Learning}
+
+\subsubsection{K-Nearest Neighbors Regression}
+KNN predicts based on the average of k nearest training samples in feature space:
+\begin{equation}
+    \hat{y} = \frac{1}{k}\sum_{i \in N_k(x)} y_i
+\end{equation}
+Hyperparameter: $k = 5$
+
+\subsection{Ensemble Methods}
+
+\subsubsection{Extra Trees Regression}
+Extremely Randomized Trees build an ensemble with additional randomization in split point selection. Hyperparameters: n\_estimators = 100, random\_state = 42, n\_jobs = -1
+
+\subsubsection{AdaBoost Regression}
+Adaptive Boosting sequentially trains weak learners with sample reweighting. Hyperparameters: n\_estimators = 50, learning\_rate = 1.0, random\_state = 42
+
+\subsubsection{Gradient Boosting Regression}
+Gradient Boosting builds additive models in a forward stage-wise fashion. Hyperparameters: n\_estimators = 100, learning\_rate = 0.1, max\_depth = 3, random\_state = 42
+
+\subsection{High-Performance Boosting}
+
+\subsubsection{XGBoost}
+Extreme Gradient Boosting implements optimized distributed gradient boosting. Hyperparameters: n\_estimators = 100, learning\_rate = 0.1, max\_depth = 3, random\_state = 42
+
+\subsubsection{LightGBM}
+Light Gradient Boosting Machine uses histogram-based algorithms for faster training. Hyperparameters: n\_estimators = 100, learning\_rate = 0.1, max\_depth = 3, random\_state = 42, verbose = -1
+
+\subsection{Specialized Boosting}
+
+\subsubsection{CatBoost}
+Categorical Boosting specializes in handling categorical features through ordered target statistics. Hyperparameters: iterations = 100, learning\_rate = 0.1, depth = 6, random\_state = 42, verbose = False
+
+\subsubsection{HistGradientBoosting}
+Histogram-based Gradient Boosting provides efficient implementation with native categorical support. Hyperparameters: max\_iter = 100, learning\_rate = 0.1, max\_depth = 3, random\_state = 42
+
+\section{Evaluation Methodology}
+
+\subsection{Cross-Validation}
+
+All algorithms underwent rigorous evaluation using 10-fold cross-validation on the training set. The KFold splitter with shuffle=True and random\_state=42 ensured consistent fold generation across all models:
+
+\begin{equation}
+    D_{train} = \{D_1, D_2, ..., D_{10}\}
+\end{equation}
+
+For each fold $i$, the model was trained on $D \setminus D_i$ and validated on $D_i$, yielding ten independent performance estimates.
+
+\subsection{Performance Metrics}
+
+Two complementary metrics quantified regression performance:
+
+\subsubsection{Root Mean Square Error (RMSE)}
+RMSE measures average prediction error magnitude:
+\begin{equation}
+    \text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
+\end{equation}
+
+Lower RMSE indicates better predictive accuracy, with units matching the target variable (divorce counts).
+
+\subsubsection{Coefficient of Determination (R²)}
+R² quantifies the proportion of variance explained:
+\begin{equation}
+    R^2 = 1 - \frac{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}{\sum_{i=1}^{n}(y_i - \bar{y})^2}
+\end{equation}
+
+Values range from $-\infty$ to 1, with 1 indicating perfect prediction, 0 indicating performance equivalent to predicting the mean, and negative values indicating worse-than-baseline performance.
+
+\subsection{Statistical Reporting}
+
+For cross-validation results, both mean and standard deviation were computed:
+\begin{align}
+    \mu_{RMSE} &= \frac{1}{10}\sum_{i=1}^{10}\text{RMSE}_i \\
+    \sigma_{RMSE} &= \sqrt{\frac{1}{9}\sum_{i=1}^{10}(\text{RMSE}_i - \mu_{RMSE})^2}
+\end{align}
+
+Standard deviation quantifies model stability across different data subsets, with lower variance indicating more robust performance.
+
+\section{Implementation Details}
+
+All experiments were conducted using Python 3.10 with the following libraries: scikit-learn 1.8.0, XGBoost 3.1.2, LightGBM 4.6.0, and CatBoost 1.2.8. Models were trained on a system with 8-core CPU, leveraging parallel processing where supported (n\_jobs=-1 for compatible algorithms). Training times were recorded for computational efficiency comparison.
+
+The complete experimental pipeline, including data preprocessing, feature engineering, model training, and evaluation, was implemented in Jupyter notebooks to ensure reproducibility and transparency. All code, notebooks, and results have been archived for reproducibility.

@@ -1,0 +1,21 @@
+# LaTeX / latexmk artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+
+# Build output directory: ignore everything except PDFs
+/out/*
+!/out/*.pdf
+!/out/**/*.pdf
