@@ -1,0 +1,14 @@
+{
+  "test_size": 0.2,
+  "random_state": 42,
+  "train_samples": 6766,
+  "test_samples": 1692,
+  "num_features": 5,
+  "feature_names": [
+    "year",
+    "district",
+    "is_total",
+    "is_urban",
+    "is_rural"
+  ]
+}
