@@ -1,9 +1,26 @@
 [project]
-name = "assignment1"
+name = "divorce-prediction"
 version = "0.1.0"
-description = "Add your description here"
+description = "ML models for divorce statistics prediction"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
-    "ipykernel>=7.1.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scikit-learn>=1.3.0",
+    "xgboost>=2.0.0",
+    "lightgbm>=4.0.0",
+    "catboost>=1.2.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "pdflatex>=0.1.3",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
