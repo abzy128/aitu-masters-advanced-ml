@@ -1,0 +1,93 @@
+{
+  "algorithm": "HistGradientBoosting Regression",
+  "num_features": 5,
+  "num_targets": 1,
+  "k_fold": 10,
+  "cv_scores": {
+    "rmse_mean": 914.3816847826753,
+    "rmse_std": 177.8558946512993,
+    "r2_mean": 0.8993923546466711,
+    "r2_std": 0.03768928997311656,
+    "fold_scores": [
+      {
+        "fold": 1,
+        "rmse": 1091.0291847337571,
+        "r2": 0.9161775885741382
+      },
+      {
+        "fold": 2,
+        "rmse": 779.9352962067582,
+        "r2": 0.9579250949337144
+      },
+      {
+        "fold": 3,
+        "rmse": 1166.6964163769783,
+        "r2": 0.8905648763309413
+      },
+      {
+        "fold": 4,
+        "rmse": 878.2563393709969,
+        "r2": 0.9189398594856042
+      },
+      {
+        "fold": 5,
+        "rmse": 1143.7577781590244,
+        "r2": 0.9302261897575849
+      },
+      {
+        "fold": 6,
+        "rmse": 537.5748841673706,
+        "r2": 0.812357842651551
+      },
+      {
+        "fold": 7,
+        "rmse": 908.5264958258603,
+        "r2": 0.8745987312692163
+      },
+      {
+        "fold": 8,
+        "rmse": 839.3058841402573,
+        "r2": 0.904835818633599
+      },
+      {
+        "fold": 9,
+        "rmse": 925.4534579901324,
+        "r2": 0.9142968947712605
+      },
+      {
+        "fold": 10,
+        "rmse": 873.2811108556183,
+        "r2": 0.874000650059103
+      }
+    ]
+  },
+  "test_scores": {
+    "rmse": 715.732973544155,
+    "r2": 0.913918726515664
+  },
+  "hyperparameters": {
+    "categorical_features": "from_dtype",
+    "early_stopping": "auto",
+    "interaction_cst": null,
+    "l2_regularization": 0.0,
+    "learning_rate": 0.1,
+    "loss": "squared_error",
+    "max_bins": 255,
+    "max_depth": 3,
+    "max_features": 1.0,
+    "max_iter": 100,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "monotonic_cst": null,
+    "n_iter_no_change": 10,
+    "quantile": null,
+    "random_state": 42,
+    "scoring": "loss",
+    "tol": 1e-07,
+    "validation_fraction": 0.1,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "training_time_seconds": 0.12424349784851074,
+  "timestamp": "2026-01-03T19:52:28.113412"
+}

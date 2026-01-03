@@ -1,0 +1,209 @@
+{
+  "comparison": "XGBoost vs LightGBM",
+  "best_model": "XGBoost",
+  "xgboost": {
+    "algorithm": "XGBoost",
+    "num_features": 5,
+    "num_targets": 1,
+    "k_fold": 10,
+    "cv_scores": {
+      "rmse_mean": 835.801089133789,
+      "rmse_std": 165.51677265378783,
+      "r2_mean": 0.9146462489493681,
+      "r2_std": 0.03657237168282817,
+      "fold_scores": [
+        {
+          "fold": 1,
+          "rmse": 1052.8666958686958,
+          "r2": 0.9219389854788729
+        },
+        {
+          "fold": 2,
+          "rmse": 695.2291031780013,
+          "r2": 0.9665680365907545
+        },
+        {
+          "fold": 3,
+          "rmse": 1074.5633471854221,
+          "r2": 0.9071664301870958
+        },
+        {
+          "fold": 4,
+          "rmse": 799.2771880540923,
+          "r2": 0.932863360062211
+        },
+        {
+          "fold": 5,
+          "rmse": 1026.890833139273,
+          "r2": 0.9437564308395648
+        },
+        {
+          "fold": 6,
+          "rmse": 523.003671819656,
+          "r2": 0.8223922333452569
+        },
+        {
+          "fold": 7,
+          "rmse": 843.854730363633,
+          "r2": 0.8918162293916961
+        },
+        {
+          "fold": 8,
+          "rmse": 751.8382625434801,
+          "r2": 0.9236372027945596
+        },
+        {
+          "fold": 9,
+          "rmse": 839.8343639318953,
+          "r2": 0.9294211342740859
+        },
+        {
+          "fold": 10,
+          "rmse": 750.6526952537412,
+          "r2": 0.9069024465295832
+        }
+      ]
+    },
+    "test_scores": {
+      "rmse": 643.8540130124317,
+      "r2": 0.9303403246293892
+    },
+    "hyperparameters": {
+      "objective": "reg:squarederror",
+      "base_score": null,
+      "booster": null,
+      "callbacks": null,
+      "colsample_bylevel": null,
+      "colsample_bynode": null,
+      "colsample_bytree": null,
+      "device": null,
+      "early_stopping_rounds": null,
+      "enable_categorical": false,
+      "eval_metric": null,
+      "feature_types": null,
+      "feature_weights": null,
+      "gamma": null,
+      "grow_policy": null,
+      "importance_type": null,
+      "interaction_constraints": null,
+      "learning_rate": 0.1,
+      "max_bin": null,
+      "max_cat_threshold": null,
+      "max_cat_to_onehot": null,
+      "max_delta_step": null,
+      "max_depth": 3,
+      "max_leaves": null,
+      "min_child_weight": null,
+      "missing": NaN,
+      "monotone_constraints": null,
+      "multi_strategy": null,
+      "n_estimators": 100,
+      "n_jobs": null,
+      "num_parallel_tree": null,
+      "random_state": 42,
+      "reg_alpha": null,
+      "reg_lambda": null,
+      "sampling_method": null,
+      "scale_pos_weight": null,
+      "subsample": null,
+      "tree_method": null,
+      "validate_parameters": null,
+      "verbosity": null
+    },
+    "training_time_seconds": 0.2545030117034912,
+    "timestamp": "2026-01-03T19:50:57.477111"
+  },
+  "lightgbm": {
+    "algorithm": "LightGBM",
+    "num_features": 5,
+    "num_targets": 1,
+    "k_fold": 10,
+    "cv_scores": {
+      "rmse_mean": 913.2957945479324,
+      "rmse_std": 177.9206894176867,
+      "r2_mean": 0.8996886090351562,
+      "r2_std": 0.037508594389588264,
+      "fold_scores": [
+        {
+          "fold": 1,
+          "rmse": 1091.0405854811922,
+          "r2": 0.9161758367545747
+        },
+        {
+          "fold": 2,
+          "rmse": 779.9415031358733,
+          "r2": 0.9579244252448473
+        },
+        {
+          "fold": 3,
+          "rmse": 1166.6964163769783,
+          "r2": 0.8905648763309413
+        },
+        {
+          "fold": 4,
+          "rmse": 878.2563393709969,
+          "r2": 0.9189398594856042
+        },
+        {
+          "fold": 5,
+          "rmse": 1143.7555145697968,
+          "r2": 0.9302264659333486
+        },
+        {
+          "fold": 6,
+          "rmse": 537.5748841673706,
+          "r2": 0.812357842651551
+        },
+        {
+          "fold": 7,
+          "rmse": 897.8101491575288,
+          "r2": 0.8775395765897387
+        },
+        {
+          "fold": 8,
+          "rmse": 839.232474362213,
+          "r2": 0.9048524649506328
+        },
+        {
+          "fold": 9,
+          "rmse": 925.2872356689645,
+          "r2": 0.9143276785769844
+        },
+        {
+          "fold": 10,
+          "rmse": 873.3628431884105,
+          "r2": 0.8739770638333397
+        }
+      ]
+    },
+    "test_scores": {
+      "rmse": 715.732973544155,
+      "r2": 0.913918726515664
+    },
+    "hyperparameters": {
+      "boosting_type": "gbdt",
+      "class_weight": null,
+      "colsample_bytree": 1.0,
+      "importance_type": "split",
+      "learning_rate": 0.1,
+      "max_depth": 3,
+      "min_child_samples": 20,
+      "min_child_weight": 0.001,
+      "min_split_gain": 0.0,
+      "n_estimators": 100,
+      "n_jobs": null,
+      "num_leaves": 31,
+      "objective": null,
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 0.0,
+      "subsample": 1.0,
+      "subsample_for_bin": 200000,
+      "subsample_freq": 0,
+      "verbose": -1
+    },
+    "training_time_seconds": 0.031636714935302734,
+    "timestamp": "2026-01-03T19:50:57.477365"
+  },
+  "timestamp": "2026-01-03T19:50:57.477536"
+}

@@ -1,0 +1,90 @@
+{
+  "algorithm": "Extra Trees Regression",
+  "num_features": 5,
+  "num_targets": 1,
+  "k_fold": 10,
+  "cv_scores": {
+    "rmse_mean": 376.15846770159874,
+    "rmse_std": 112.80846352089567,
+    "r2_mean": 0.9830846223226392,
+    "r2_std": 0.008327444401425351,
+    "fold_scores": [
+      {
+        "fold": 1,
+        "rmse": 612.8406209004394,
+        "r2": 0.973552629310371
+      },
+      {
+        "fold": 2,
+        "rmse": 420.69927631807394,
+        "r2": 0.9877580803458907
+      },
+      {
+        "fold": 3,
+        "rmse": 402.39337813489215,
+        "r2": 0.9869820483020575
+      },
+      {
+        "fold": 4,
+        "rmse": 309.3731390023254,
+        "r2": 0.9899415751992614
+      },
+      {
+        "fold": 5,
+        "rmse": 492.9196578263934,
+        "r2": 0.9870408476533706
+      },
+      {
+        "fold": 6,
+        "rmse": 217.82850167547784,
+        "r2": 0.9691906961148048
+      },
+      {
+        "fold": 7,
+        "rmse": 306.41040751235414,
+        "r2": 0.9857362486159646
+      },
+      {
+        "fold": 8,
+        "rmse": 265.97275150810015,
+        "r2": 0.9904433149736214
+      },
+      {
+        "fold": 9,
+        "rmse": 302.48120813443234,
+        "r2": 0.9908444552303459
+      },
+      {
+        "fold": 10,
+        "rmse": 430.66573600349847,
+        "r2": 0.9693563274807024
+      }
+    ]
+  },
+  "test_scores": {
+    "rmse": 325.39240008372434,
+    "r2": 0.9822081362971455
+  },
+  "hyperparameters": {
+    "bootstrap": false,
+    "ccp_alpha": 0.0,
+    "criterion": "squared_error",
+    "max_depth": null,
+    "max_features": 1.0,
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 100,
+    "n_jobs": -1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "training_time_seconds": 0.15350079536437988,
+  "timestamp": "2026-01-03T19:52:10.702496"
+}
