@@ -31,15 +31,7 @@
 
 ## Evaluation criteria:
 
-**90+ points:**
 - Use of a dataset relevant to Kazakhstan.
 - The article includes sections such as Introduction, Literature Review, Materials and Methods, Results and Discussion. References should be 10-15.
 - The Introduction section must clearly formulate the research problem and justify its relevance through a systematic Literature review of publications from the last five years.
 - The article, excluding the title, abstract, keywords (6 items), conclusion and bibliography, must contain 3500 words.
-- The article's originality should be greater than 97 percent; no artificial intelligence was used.
-
-**80 points:**
-- A report containing a link to the dataset, source code, and table 1.
-
-**60 points:**
-- Not all methods were applied, or the dataset was poorly chosen.
