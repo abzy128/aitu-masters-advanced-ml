@@ -1,0 +1,16 @@
+[project]
+name = "assignment3"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "albumentations>=2.0.8",
+    "matplotlib>=3.10.8",
+    "md2pdf>=3.1.0",
+    "numpy>=2.4.2",
+    "pillow>=12.1.0",
+    "torch>=2.10.0",
+    "torchvision>=0.25.0",
+    "ultralytics>=8.4.11",
+]

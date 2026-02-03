@@ -1,0 +1,16 @@
+# Kinder Surprise Figures Object Detection Dataset
+# Dataset configuration for YOLOv5/YOLOv8 training
+
+path: /home/abzy/dev/aitu/masters/trimester2/advanced-ml/assignment3/dataset
+train: images/train
+val: images/val
+
+# Number of classes
+nc: 4
+
+# Class names (must match annotation labels exactly)
+names:
+  0: penguin_figure
+  1: octopus_figure
+  2: battery
+  3: controller
