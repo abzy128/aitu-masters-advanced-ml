@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case 3: Stock Market Prediction</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a1a; color: #e0e0e0; overflow: hidden; }
+  .slide { display: none; width: 100vw; height: 100vh; padding: 60px 80px; flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+  h1 { font-size: 2.8em; color: #66bb6a; margin-bottom: 20px; }
+  h2 { font-size: 2em; color: #66bb6a; margin-bottom: 30px; border-bottom: 2px solid #66bb6a; padding-bottom: 10px; }
+  h3 { font-size: 1.3em; color: #a5d6a7; margin: 15px 0 8px; }
+  p, li { font-size: 1.15em; line-height: 1.7; }
+  ul { margin-left: 30px; }
+  li { margin-bottom: 8px; }
+  .subtitle { font-size: 1.4em; color: #b0bec5; margin-bottom: 10px; }
+  .meta { font-size: 1em; color: #78909c; margin-top: 30px; line-height: 1.8; }
+  table { border-collapse: collapse; margin: 15px 0; width: auto; }
+  th, td { border: 1px solid #37474f; padding: 10px 20px; text-align: left; font-size: 1.05em; }
+  th { background: #1b5e20; color: #c8e6c9; }
+  td { background: #1a1a2e; }
+  .highlight { color: #ffd54f; font-weight: bold; }
+  .nav { position: fixed; bottom: 20px; right: 30px; color: #546e7a; font-size: 0.9em; }
+  .tag { display: inline-block; background: #1b5e20; color: #c8e6c9; padding: 4px 14px; border-radius: 15px; font-size: 0.9em; margin: 3px; }
+  .two-col { display: flex; gap: 40px; }
+  .two-col > div { flex: 1; }
+  .title-slide { justify-content: center; align-items: center; text-align: center; }
+  .title-slide h1 { font-size: 3.2em; }
+  .warn { color: #ff8a65; }
+</style>
+</head>
+<body>
+
+<div class="slide title-slide active" id="s1">
+  <h1>Time Series Forecasting for Stock Market Prediction</h1>
+  <p class="subtitle">Using Facebook Prophet on Yahoo Finance Data (AAPL)</p>
+  <div class="meta">
+    <p>Artem Grents &middot; Abzal Orazbek</p>
+    <p>Group AAI-2501M</p>
+    <p>Advanced Machine Learning</p>
+    <p>Astana IT University, 2026</p>
+  </div>
+</div>
+
+<div class="slide" id="s2">
+  <h2>Introduction</h2>
+  <ul>
+    <li>Stock price forecasting informs trading strategies, risk management, and portfolio optimization</li>
+    <li>Prices are influenced by macroeconomics, fundamentals, sentiment, and external events</li>
+    <li>Methods evolved from classical (ARIMA) to deep learning (LSTM, Transformer)</li>
+    <li>Facebook Prophet occupies a <strong>middle ground</strong>: captures trend + seasonality while remaining accessible</li>
+    <li><strong>Goal:</strong> Forecast AAPL daily closing prices using Prophet and evaluate with standard regression metrics</li>
+  </ul>
+</div>
+
+<div class="slide" id="s3">
+  <h2>Dataset</h2>
+  <div class="two-col">
+    <div>
+      <h3>Yahoo Finance &mdash; AAPL</h3>
+      <ul>
+        <li>Downloaded via <code>yfinance</code> Python library</li>
+        <li>Period: <span class="highlight">Jan 2020 &ndash; Dec 2024</span></li>
+        <li><span class="highlight">1,258</span> trading days</li>
+        <li>Target: daily closing price</li>
+        <li>Univariate setup (price only)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Train/Test Split</h3>
+      <table>
+        <tr><th>Set</th><th>Days</th><th>Period</th></tr>
+        <tr><td>Training</td><td>1,198</td><td>Jan 2020 &ndash; Oct 2024</td></tr>
+        <tr><td>Testing</td><td>60</td><td>Last ~3 months</td></tr>
+      </table>
+      <h3>Format</h3>
+      <p>Prophet input: <code>ds</code> (date) + <code>y</code> (closing price)</p>
+      <p>Temporal split preserves time ordering</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s4">
+  <h2>Technology: Facebook Prophet</h2>
+  <div class="two-col">
+    <div>
+      <h3>How It Works</h3>
+      <ul>
+        <li>Decomposable additive model: <br><code>y(t) = trend + seasonality + holidays + error</code></li>
+        <li>Piecewise linear/logistic growth trend</li>
+        <li>Fourier series for seasonality</li>
+        <li>Automatic changepoint detection</li>
+        <li>Bayesian framework (Stan backend)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Why Prophet?</h3>
+      <ul>
+        <li>Designed for business time series at scale (Taylor & Letham, 2018)</li>
+        <li>Minimal manual tuning required</li>
+        <li>Best for medium-to-long-term forecasting (Cao & Wang, 2023)</li>
+        <li>MAPE &lt;5% is standard for stock forecasting</li>
+      </ul>
+      <h3>Configuration</h3>
+      <p>Weekly + yearly seasonality; <code>changepoint_prior_scale=0.05</code></p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s5">
+  <h2>Results</h2>
+  <div class="two-col">
+    <div>
+      <h3>Forecasting Metrics</h3>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>MAE</td><td>$5.04</td></tr>
+        <tr><td>RMSE</td><td>$5.96</td></tr>
+        <tr><td>R&sup2;</td><td class="warn">-0.4883</td></tr>
+        <tr><td>MAPE</td><td class="highlight">2.20%</td></tr>
+      </table>
+      <p style="margin-top:10px; font-size:0.95em;">MAPE of 2.2% is within the acceptable range reported in literature (Satrio et al., 2021: 2&ndash;5%)</p>
+    </div>
+    <div>
+      <h3>Sample Predictions</h3>
+      <table>
+        <tr><th>Date</th><th>Actual</th><th>Predicted</th></tr>
+        <tr><td>Oct 7</td><td>$220.45</td><td>$221.61</td></tr>
+        <tr><td>Oct 9</td><td>$228.26</td><td>$221.76</td></tr>
+        <tr><td>Oct 14</td><td>$230.01</td><td>$222.28</td></tr>
+        <tr><td>Oct 18</td><td>$233.68</td><td>$222.36</td></tr>
+      </table>
+      <p style="font-size:0.95em;">Prophet captures price level but misses upward momentum</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s6">
+  <h2>Conclusion</h2>
+  <ul>
+    <li><span class="highlight">MAPE of 2.20%</span> &mdash; predictions within ~$5 of actual price</li>
+    <li>Negative R&sup2; (-0.49) reveals Prophet's known limitation: trend extrapolation doesn't capture short-term variance</li>
+    <li>Prophet excels at <strong>trend decomposition and seasonality</strong>, not short-term momentum</li>
+    <li>Results consistent with published benchmarks (Sadorsky, 2021; Hansun et al., 2022)</li>
+    <li><strong>Improvement paths:</strong>
+      <ul>
+        <li>Hybrid Prophet-ARIMA for residual modeling (Nayak et al., 2020: &minus;12&ndash;18% RMSE)</li>
+        <li>Add external regressors: volume, S&P 500, VIX</li>
+        <li>Rolling-window retraining for robust evaluation</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div class="slide" id="s7">
+  <h2>References</h2>
+  <ul style="font-size: 0.95em;">
+    <li>Taylor, S. J., & Letham, B. (2018). Forecasting at scale. <em>The American Statistician</em>, 72(1), 37&ndash;45.</li>
+    <li>Satrio, S. J., et al. (2021). Comparison of ARIMA, Prophet, and LSTM for stock prediction. <em>Procedia Computer Science</em>, 179.</li>
+    <li>Awan, K. A., & Aziz, A. (2021). Stock market prediction using Prophet and ARIMA. <em>IEEE Access</em>, 9.</li>
+    <li>Sadorsky, A. (2021). Random forest approach to predicting stock prices. <em>Energy Economics</em>, 101.</li>
+    <li>Hansun, S., et al. (2022). Stock prediction using Prophet, ARIMA, and BPNN. <em>Big Data and Cognitive Computing</em>, 6(1).</li>
+    <li>Cao, J., & Wang, J. (2023). Survey of time series forecasting for financial markets. <em>Expert Systems with Applications</em>, 213.</li>
+    <li>Nayak, R. K., et al. (2020). Optimized Prophet-ARIMA hybrid model. <em>Int. J. Information Technology</em>, 13.</li>
+  </ul>
+</div>
+
+<div class="nav">
+  <span id="counter"></span> &mdash; &larr; &rarr; to navigate
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  }
+  show(0);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') show(current - 1);
+  });
+</script>
+</body>
+</html>

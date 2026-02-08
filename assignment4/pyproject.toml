@@ -4,4 +4,13 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "matplotlib>=3.10.8",
+    "md2pdf[cli]>=3.1.0",
+    "pandas>=3.0.0",
+    "prophet>=1.3.0",
+    "scikit-learn>=1.8.0",
+    "typer>=0.21.1",
+    "xgboost>=3.1.3",
+    "yfinance>=1.1.0",
+]

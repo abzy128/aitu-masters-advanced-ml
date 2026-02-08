@@ -1,0 +1,60 @@
+{
+  "case": "Fraud Detection in Financial Transactions",
+  "model": "Isolation Forest",
+  "dataset": "Credit Card Fraud Detection",
+  "dataset_shape": {
+    "rows": 284807,
+    "features": 30
+  },
+  "class_distribution": {
+    "normal": 284315,
+    "fraud": 492
+  },
+  "train_size": 227845,
+  "test_size": 56962,
+  "metrics": {
+    "accuracy": 0.9975,
+    "precision": 0.2804,
+    "recall": 0.3061,
+    "f1_score": 0.2927,
+    "roc_auc": 0.9539
+  },
+  "confusion_matrix": {
+    "true_negative": 56787,
+    "false_positive": 77,
+    "false_negative": 68,
+    "true_positive": 30
+  },
+  "classification_report": {
+    "0": {
+      "precision": 0.9988,
+      "recall": 0.9986,
+      "f1-score": 0.9987,
+      "support": 56864.0
+    },
+    "1": {
+      "precision": 0.2804,
+      "recall": 0.3061,
+      "f1-score": 0.2927,
+      "support": 98.0
+    },
+    "accuracy": 0.9975,
+    "macro avg": {
+      "precision": 0.6396,
+      "recall": 0.6524,
+      "f1-score": 0.6457,
+      "support": 56962.0
+    },
+    "weighted avg": {
+      "precision": 0.9976,
+      "recall": 0.9975,
+      "f1-score": 0.9975,
+      "support": 56962.0
+    }
+  },
+  "hyperparameters": {
+    "n_estimators": 200,
+    "contamination": 0.001727,
+    "max_samples": "auto"
+  }
+}

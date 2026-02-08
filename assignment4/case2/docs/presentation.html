@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case 2: Fraud Detection</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a1a; color: #e0e0e0; overflow: hidden; }
+  .slide { display: none; width: 100vw; height: 100vh; padding: 60px 80px; flex-direction: column; justify-content: center; }
+  .slide.active { display: flex; }
+  h1 { font-size: 2.8em; color: #ef5350; margin-bottom: 20px; }
+  h2 { font-size: 2em; color: #ef5350; margin-bottom: 30px; border-bottom: 2px solid #ef5350; padding-bottom: 10px; }
+  h3 { font-size: 1.3em; color: #ef9a9a; margin: 15px 0 8px; }
+  p, li { font-size: 1.15em; line-height: 1.7; }
+  ul { margin-left: 30px; }
+  li { margin-bottom: 8px; }
+  .subtitle { font-size: 1.4em; color: #b0bec5; margin-bottom: 10px; }
+  .meta { font-size: 1em; color: #78909c; margin-top: 30px; line-height: 1.8; }
+  table { border-collapse: collapse; margin: 15px 0; width: auto; }
+  th, td { border: 1px solid #37474f; padding: 10px 20px; text-align: left; font-size: 1.05em; }
+  th { background: #b71c1c; color: #ffcdd2; }
+  td { background: #1a1a2e; }
+  .highlight { color: #ffd54f; font-weight: bold; }
+  .nav { position: fixed; bottom: 20px; right: 30px; color: #546e7a; font-size: 0.9em; }
+  .tag { display: inline-block; background: #b71c1c; color: #ffcdd2; padding: 4px 14px; border-radius: 15px; font-size: 0.9em; margin: 3px; }
+  .two-col { display: flex; gap: 40px; }
+  .two-col > div { flex: 1; }
+  .title-slide { justify-content: center; align-items: center; text-align: center; }
+  .title-slide h1 { font-size: 3.2em; }
+  .warn { color: #ff8a65; }
+</style>
+</head>
+<body>
+
+<div class="slide title-slide active" id="s1">
+  <h1>Fraud Detection in Financial Transactions</h1>
+  <p class="subtitle">Using Isolation Forest on Credit Card Fraud Dataset</p>
+  <div class="meta">
+    <p>Artem Grents &middot; Abzal Orazbek</p>
+    <p>Group AAI-2501M</p>
+    <p>Advanced Machine Learning</p>
+    <p>Astana IT University, 2026</p>
+  </div>
+</div>
+
+<div class="slide" id="s2">
+  <h2>Introduction</h2>
+  <ul>
+    <li>Credit card fraud causes <span class="highlight">&gt;$30 billion</span> in global losses annually</li>
+    <li>Digital payments expansion increases the attack surface</li>
+    <li>Traditional rule-based systems struggle with evolving fraud patterns</li>
+    <li>Key challenge: <span class="warn">extreme class imbalance</span> &mdash; fraud is &lt;0.2% of transactions</li>
+    <li><strong>Goal:</strong> Apply unsupervised anomaly detection to identify fraudulent transactions without labeled training data</li>
+  </ul>
+</div>
+
+<div class="slide" id="s3">
+  <h2>Dataset</h2>
+  <div class="two-col">
+    <div>
+      <h3>Credit Card Fraud Detection (Kaggle/ULB)</h3>
+      <ul>
+        <li><span class="highlight">284,807</span> transactions over 2 days</li>
+        <li><span class="highlight">30</span> features</li>
+        <li>European cardholders, Sept 2013</li>
+        <li>Train/test: 80/20 (stratified)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Class Distribution</h3>
+      <table>
+        <tr><th>Class</th><th>Count</th><th>Ratio</th></tr>
+        <tr><td>Normal</td><td>284,315</td><td>99.83%</td></tr>
+        <tr><td class="warn">Fraud</td><td>492</td><td>0.17%</td></tr>
+      </table>
+      <h3>Features</h3>
+      <p><span class="tag">V1&ndash;V28</span> PCA-transformed (anonymized)</p>
+      <p><span class="tag">Time</span> <span class="tag">Amount</span> scaled with StandardScaler</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s4">
+  <h2>Technology: Isolation Forest</h2>
+  <div class="two-col">
+    <div>
+      <h3>How It Works</h3>
+      <ul>
+        <li>Unsupervised anomaly detection algorithm</li>
+        <li>Builds ensemble of random isolation trees</li>
+        <li>Recursively partitions feature space with random splits</li>
+        <li>Anomalies are <em>few and different</em> &rarr; isolated in fewer splits</li>
+        <li>Shorter path length = more anomalous</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Why Isolation Forest?</h3>
+      <ul>
+        <li>No labeled data required for training</li>
+        <li>Naturally handles extreme class imbalance</li>
+        <li>Linear time complexity &mdash; suitable for real-time</li>
+        <li>Competitive with supervised methods on this dataset (Alarfaj et al., 2022)</li>
+      </ul>
+      <h3>Key Parameter</h3>
+      <p><code>contamination = 0.0017</code> (matched to fraud ratio)</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s5">
+  <h2>Results</h2>
+  <div class="two-col">
+    <div>
+      <h3>Classification Metrics</h3>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Accuracy</td><td>0.9975</td></tr>
+        <tr><td>Precision (fraud)</td><td>0.2804</td></tr>
+        <tr><td>Recall (fraud)</td><td>0.3061</td></tr>
+        <tr><td>F1-Score (fraud)</td><td>0.2927</td></tr>
+        <tr><td>ROC-AUC</td><td class="highlight">0.9539</td></tr>
+      </table>
+      <p style="margin-top:10px; font-size:0.95em;">F1 of ~0.29 matches published results for standalone Isolation Forest (Alarfaj et al., 2022: 0.28&ndash;0.32)</p>
+    </div>
+    <div>
+      <h3>Confusion Matrix</h3>
+      <table>
+        <tr><th></th><th>Pred: Normal</th><th>Pred: Fraud</th></tr>
+        <tr><td><strong>Normal</strong></td><td>56,787</td><td>77</td></tr>
+        <tr><td><strong>Fraud</strong></td><td>68</td><td>30</td></tr>
+      </table>
+      <h3>Key Insight</h3>
+      <p>False positive rate: only <span class="highlight">0.14%</span></p>
+      <p>High ROC-AUC (0.95) shows strong anomaly <em>ranking</em> ability</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s6">
+  <h2>Conclusion</h2>
+  <ul>
+    <li><span class="highlight">ROC-AUC of 0.9539</span> confirms strong anomaly scoring capability</li>
+    <li>Low F1 (0.29) reflects inherent limitation of purely unsupervised detection on 0.17% fraud rate</li>
+    <li>Very low false positive rate (0.14%) is valuable for production systems</li>
+    <li>Best used as a <strong>first-line pre-filter</strong> or feature generator for downstream supervised models</li>
+    <li><strong>Improvement paths:</strong>
+      <ul>
+        <li>Hybrid approach: IF scores as features for supervised classifier (+10&ndash;20% F1)</li>
+        <li>Extended Isolation Forest for correlated features</li>
+        <li>Threshold optimization on validation set</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div class="slide" id="s7">
+  <h2>References</h2>
+  <ul style="font-size: 0.95em;">
+    <li>Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). Isolation forest. <em>IEEE ICDM</em>.</li>
+    <li>Alarfaj, F. K., et al. (2022). Credit card fraud detection using ML and DL algorithms. <em>Applied Sciences</em>, 12(15).</li>
+    <li>Carcillo, F., et al. (2021). Combining unsupervised and supervised learning in fraud detection. <em>Machine Learning</em>, 110.</li>
+    <li>Hilal, W., et al. (2022). Financial fraud: A review of anomaly detection techniques. <em>Expert Systems with Applications</em>, 193.</li>
+    <li>Makki, S., et al. (2019). Imbalanced classification approaches for fraud detection. <em>J. Big Data</em>, 6.</li>
+    <li>Taha, A. A., & Malebary, S. J. (2020). Optimized LightGBM for fraud detection. <em>IEEE Access</em>, 8.</li>
+    <li>Foorthuis, R. (2021). On the nature and types of anomalies. <em>Data Mining and Knowledge Discovery</em>, 35.</li>
+  </ul>
+</div>
+
+<div class="nav">
+  <span id="counter"></span> &mdash; &larr; &rarr; to navigate
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  }
+  show(0);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') show(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') show(current - 1);
+  });
+</script>
+</body>
+</html>
