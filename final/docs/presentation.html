@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time-Series Forecasting of EAF Active Power Using LSTM and Transformer Models</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #fdfdfe;
+    --fg:        #1e1e2e;
+    --accent:    #2b5797;
+    --accent-lt: #e8eef6;
+    --gray:      #6c6f85;
+    --border:    #dce0e8;
+    --green:     #2e7d52;
+    --orange:    #c4600c;
+    --red:       #c0392b;
+    --slide-w:   960px;
+    --slide-h:   700px;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #e6e9ef;
+    color: var(--fg);
+    overflow: hidden;
+  }
+
+  /* ── Slide Container ──────────────────────────────────── */
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slide {
+    display: none;
+    flex-direction: column;
+    width: var(--slide-w);
+    height: var(--slide-h);
+    background: var(--bg);
+    border-radius: 6px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.12);
+    padding: 44px 56px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+
+  /* Top accent bar */
+  .slide::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--accent);
+  }
+
+  /* ── Slide number ─────────────────────────────────────── */
+  .slide-number {
+    position: absolute;
+    bottom: 14px;
+    right: 24px;
+    font-size: 12px;
+    color: var(--gray);
+  }
+
+  /* ── Typography ───────────────────────────────────────── */
+  h1 { font-size: 28px; font-weight: 700; color: var(--accent); line-height: 1.25; margin-bottom: 10px; }
+  h2 { font-size: 22px; font-weight: 600; color: var(--accent); margin-bottom: 14px; }
+  h3 { font-size: 17px; font-weight: 600; color: var(--fg); margin: 12px 0 6px; }
+
+  p, li { font-size: 15px; line-height: 1.55; color: var(--fg); }
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  li::marker { color: var(--accent); }
+
+  strong { font-weight: 600; }
+  em     { font-style: italic; color: var(--gray); }
+
+  .small  { font-size: 13px; color: var(--gray); line-height: 1.5; }
+  .tiny   { font-size: 11.5px; color: var(--gray); line-height: 1.45; }
+  .accent { color: var(--accent); }
+  .green  { color: var(--green); }
+  .orange { color: var(--orange); }
+  .bold   { font-weight: 700; }
+
+  /* ── Tables ───────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 8px 0;
+  }
+  th, td {
+    text-align: left;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  tr:nth-child(even) td { background: var(--accent-lt); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.best { font-weight: 700; color: var(--green); }
+
+  /* ── Figures ──────────────────────────────────────────── */
+  figure {
+    text-align: center;
+    margin: 10px 0;
+    flex-shrink: 0;
+  }
+  figure img {
+    max-width: 100%;
+    max-height: 340px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  figcaption {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ── Layout helpers ───────────────────────────────────── */
+  .content { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; }
+  .cols    { display: flex; gap: 32px; flex: 1; }
+  .col     { flex: 1; display: flex; flex-direction: column; }
+  .spacer  { flex: 1; }
+
+  .card {
+    background: var(--accent-lt);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin: 8px 0;
+    font-size: 14px;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 10px 0;
+  }
+  .metric-box {
+    background: var(--accent-lt);
+    border-radius: 6px;
+    padding: 14px 18px;
+    text-align: center;
+  }
+  .metric-box .val { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .metric-box .lbl { font-size: 12px; color: var(--gray); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* Title slide */
+  .title-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 48px 64px;
+  }
+  .title-slide h1 { font-size: 26px; margin-bottom: 18px; line-height: 1.35; }
+  .title-slide .subtitle { font-size: 16px; color: var(--gray); margin-bottom: 28px; }
+  .title-slide .meta { font-size: 14px; color: var(--gray); line-height: 1.8; }
+  .title-slide .divider { width: 80px; height: 3px; background: var(--accent); margin: 0 auto 24px; border-radius: 2px; }
+
+  /* References slide */
+  .ref-list { column-count: 2; column-gap: 28px; font-size: 11px; line-height: 1.55; color: var(--gray); }
+  .ref-list p { margin-bottom: 5px; break-inside: avoid; }
+
+  /* ── Navigation HUD ───────────────────────────────────── */
+  .nav-hint {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--gray);
+    background: rgba(255,255,255,.85);
+    padding: 4px 16px;
+    border-radius: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    pointer-events: none;
+  }
+
+  /* ── Pipeline diagram ─────────────────────────────────── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 14px 0;
+    flex-wrap: nowrap;
+  }
+  .pipeline .step {
+    background: var(--accent-lt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 13px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--accent);
+    min-width: 100px;
+  }
+  .pipeline .arrow {
+    font-size: 18px;
+    color: var(--gray);
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+
+  /* ── Architecture diagram (text-based) ────────────────── */
+  .arch-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  .arch-box .layer {
+    background: var(--accent-lt);
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    padding: 8px 28px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    width: 280px;
+    text-align: center;
+  }
+  .arch-box .layer.output {
+    background: var(--accent);
+    color: #fff;
+  }
+  .arch-box .arr { color: var(--gray); font-size: 16px; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ============================================================ -->
+<!-- SLIDE 0: Title                                                -->
+<!-- ============================================================ -->
+<div class="slide title-slide active" data-slide="0">
+  <h1>Time-Series Forecasting of Electric Arc Furnace Active Power<br>Using LSTM and Transformer Models</h1>
+  <div class="divider"></div>
+  <p class="subtitle">Advanced Machine Learning &mdash; Final Project</p>
+  <p class="meta">
+    Astana IT University<br>
+    Master's Programme &mdash; Trimester 2<br>
+    February 2025
+  </p>
+  <span class="slide-number">1 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 1: Problem Statement                                    -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="1">
+  <h2>1. Problem Statement</h2>
+  <div class="content">
+    <p>Electric arc furnaces (EAFs) consume substantial electrical energy to melt scrap metal. Active power is highly dynamic, driven by arc ignition, electrode movement, and varying furnace conditions.</p>
+
+    <h3>Why predict active power?</h3>
+    <ul>
+      <li><strong>Energy cost optimization</strong> &mdash; electricity constitutes 60&ndash;70% of EAF operating costs</li>
+      <li><strong>Grid stability</strong> &mdash; EAFs are among the largest and most disruptive industrial loads, causing voltage flicker and harmonic distortion</li>
+      <li><strong>Process control</strong> &mdash; real-time forecasts inform adaptive electrode positioning and power setpoint strategies</li>
+    </ul>
+
+    <div class="card" style="margin-top:14px;">
+      <strong>Objective:</strong> Predict total active power (MW) at 1-minute resolution using a 60-minute lookback window of multivariate sensor data. Compare <strong>LSTM</strong> vs. <strong>Transformer</strong> architectures.
+    </div>
+  </div>
+  <span class="slide-number">2 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 2: Research Relevance & Literature                      -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="2">
+  <h2>2. Research Relevance &amp; Literature Review</h2>
+  <div class="content">
+    <div class="cols">
+      <div class="col">
+        <h3>Why it matters</h3>
+        <ul>
+          <li>IoT sensor proliferation creates high-frequency multivariate data that traditional models (ARIMA) struggle with</li>
+          <li>Steel industry &asymp; 7% of global CO<sub>2</sub> emissions</li>
+          <li>Direct LSTM vs. Transformer comparisons on EAF data are scarce</li>
+        </ul>
+        <h3 style="margin-top:16px;">LSTM for energy forecasting</h3>
+        <ul class="small">
+          <li>Hochreiter &amp; Schmidhuber (1997) &mdash; LSTM architecture</li>
+          <li>Kong et al. (2019) &mdash; residential load forecasting</li>
+          <li>Zhang et al. (2020) &mdash; stacked LSTMs for steel process, R&sup2; &gt; 0.85</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Transformers for time series</h3>
+        <ul class="small">
+          <li>Vaswani et al. (2017) &mdash; "Attention Is All You Need"</li>
+          <li>Zhou et al. (2021) &mdash; Informer for long-sequence forecasting</li>
+          <li>Wu et al. (2021) &mdash; Autoformer with auto-correlation</li>
+          <li>Lim et al. (2021) &mdash; Temporal Fusion Transformers</li>
+        </ul>
+        <h3 style="margin-top:16px;">EAF modeling</h3>
+        <ul class="small">
+          <li>Bowman &amp; Kr&uuml;ger (2009) &mdash; arc furnace physics</li>
+          <li>Wang et al. (2022) &mdash; CNN-LSTM hybrid for EAF, RMSE 1.5&ndash;2.5 MW</li>
+          <li>Odenthal et al. (2018) &mdash; CFD + ML for EAF optimization</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">3 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 3: Dataset Description                                  -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="3">
+  <h2>3. Dataset Description</h2>
+  <div class="content">
+    <div class="cols">
+      <div class="col">
+        <h3>Overview</h3>
+        <table>
+          <tr><td><strong>Records</strong></td><td class="num">50,400</td></tr>
+          <tr><td><strong>Original columns</strong></td><td class="num">43</td></tr>
+          <tr><td><strong>Resolution</strong></td><td>1-minute intervals</td></tr>
+          <tr><td><strong>Period</strong></td><td>Jan 13 &ndash; Feb 16, 2025 (35 days)</td></tr>
+          <tr><td><strong>Domain</strong></td><td>Electric arc furnace sensors</td></tr>
+          <tr><td><strong>Missing timestamps</strong></td><td class="num">0</td></tr>
+        </table>
+      </div>
+      <div class="col">
+        <h3>Target variable: ActivePower (MW)</h3>
+        <table>
+          <tr><td>Mean</td><td class="num">27.33</td></tr>
+          <tr><td>Std Dev</td><td class="num">5.34</td></tr>
+          <tr><td>Min</td><td class="num">0.00</td></tr>
+          <tr><td>Median</td><td class="num">28.75</td></tr>
+          <tr><td>Max</td><td class="num">38.05</td></tr>
+        </table>
+        <p class="small" style="margin-top:10px;">Three-phase electrical measurements (A/B/C), gas pressures, temperatures, electrode positions, and binary operational flags.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">4 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 4: Feature Selection                                    -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="4">
+  <h2>4. Feature Selection</h2>
+  <div class="content">
+    <p>From 43 original columns, <strong>10 input features</strong> were selected based on domain relevance, variance, and data quality:</p>
+    <table style="font-size:13px; margin-top:8px;">
+      <thead>
+        <tr><th>Feature</th><th>Category</th><th>Rationale</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PowerA, PowerB, PowerC</td><td>Electrical</td><td>Per-phase power; directly constitutes ActivePower</td></tr>
+        <tr><td>ReactivePower</td><td>Electrical</td><td>Complementary power component; physical coupling</td></tr>
+        <tr><td>CurrentHolderPositionA/B/C</td><td>Mechanical</td><td>Electrode position governs arc length &amp; power draw</td></tr>
+        <tr><td>GasPressureUnderFurnaceA</td><td>Gas/Thermal</td><td>High variability; reflects furnace dynamics</td></tr>
+        <tr><td>AirTemperatureMantelB</td><td>Thermal</td><td>Widest range among phases (43&ndash;433&deg;)</td></tr>
+        <tr><td>FurnacePodTemparature</td><td>Thermal</td><td>Overall thermal state; slow-changing baseline</td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:12px;">Excluded categories</h3>
+    <ul class="small">
+      <li><strong>Constant columns</strong> &mdash; FurnaceBathTemperature, VentilationValveA (always 0)</li>
+      <li><strong>Sparse binary flags</strong> &mdash; UpperRing/LowerRing raise/release (~99% zeros)</li>
+      <li><strong>Near-constant</strong> &mdash; HolderMode (~92% ones), HighVoltage (std &lt; 4), PowerSetpoint (14 unique values)</li>
+      <li><strong>Redundant phases</strong> &mdash; kept one representative to reduce multicollinearity</li>
+    </ul>
+  </div>
+  <span class="slide-number">5 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 5: Preprocessing Pipeline                               -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="5">
+  <h2>5. Preprocessing Pipeline</h2>
+  <div class="content">
+    <div class="pipeline">
+      <div class="step">Load CSV<br><span class="tiny">50,400 rows</span></div>
+      <span class="arrow">&rarr;</span>
+      <div class="step">Select 11<br>columns</div>
+      <span class="arrow">&rarr;</span>
+      <div class="step">Parse types<br><span class="tiny">float + datetime</span></div>
+      <span class="arrow">&rarr;</span>
+      <div class="step">Sort by<br>DateTime</div>
+      <span class="arrow">&rarr;</span>
+      <div class="step">FFill + BFill<br><span class="tiny">imputation</span></div>
+      <span class="arrow">&rarr;</span>
+      <div class="step">80/20<br>temporal split</div>
+    </div>
+
+    <div class="cols" style="margin-top:10px;">
+      <div class="col">
+        <h3>Missing value handling</h3>
+        <ul class="small">
+          <li>Missing values appeared as empty strings (2&ndash;4% per column)</li>
+          <li>Total: 16,988 missing across selected columns</li>
+          <li><strong>Forward-fill + backward-fill</strong>: propagates last known sensor value, standard for time-series</li>
+          <li>All nulls resolved after imputation</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Train / Test split</h3>
+        <table>
+          <tr><th>Set</th><th>Rows</th><th>Period</th></tr>
+          <tr><td>Train (80%)</td><td class="num">40,320</td><td>Jan 13 &ndash; Feb 9</td></tr>
+          <tr><td>Test (20%)</td><td class="num">10,080</td><td>Feb 10 &ndash; Feb 16</td></tr>
+        </table>
+        <p class="small" style="margin-top:8px;">Chronological split (no shuffling) to prevent data leakage in time-series evaluation.</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">6 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 6: Common Training Pipeline                             -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="6">
+  <h2>6. Common Training Pipeline</h2>
+  <div class="content">
+    <p>Both models share an identical data and training pipeline for fair comparison:</p>
+    <table style="margin-top:10px;">
+      <thead><tr><th>Component</th><th>Configuration</th></tr></thead>
+      <tbody>
+        <tr><td>Feature scaling</td><td>MinMaxScaler [0, 1], fit on train only</td></tr>
+        <tr><td>Sliding window</td><td>60 timesteps (= 60 minutes) &rarr; predict step 61</td></tr>
+        <tr><td>Input shape</td><td>(batch, 60, 10)</td></tr>
+        <tr><td>Loss function</td><td>Mean Squared Error (MSE)</td></tr>
+        <tr><td>Optimizer</td><td>Adam (lr = 1e-3)</td></tr>
+        <tr><td>Epochs</td><td>50</td></tr>
+        <tr><td>Batch size</td><td>64</td></tr>
+        <tr><td>Shuffle</td><td>No (preserve temporal order)</td></tr>
+        <tr><td>Random seed</td><td>20940</td></tr>
+        <tr><td>Framework</td><td>PyTorch 2.10 (CUDA)</td></tr>
+      </tbody>
+    </table>
+    <div class="card" style="margin-top:12px;">
+      <strong>Evaluation:</strong> MAE, MSE, RMSE, R&sup2; &mdash; all computed on inverse-transformed (original MW scale) predictions against the test set.
+    </div>
+  </div>
+  <span class="slide-number">7 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 7: LSTM Model                                           -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="7">
+  <h2>7. LSTM &mdash; Architecture &amp; Training</h2>
+  <div class="content">
+    <div class="cols">
+      <div class="col">
+        <h3>How LSTM works</h3>
+        <p class="small">Long Short-Term Memory cells use three gates to regulate information flow through a recurrent cell state:</p>
+        <ul class="small" style="margin-top:6px;">
+          <li><strong>Forget gate</strong> &mdash; discards irrelevant past information</li>
+          <li><strong>Input gate</strong> &mdash; writes new information to cell state</li>
+          <li><strong>Output gate</strong> &mdash; reads from filtered cell state</li>
+        </ul>
+        <p class="small" style="margin-top:8px;">This gating mechanism solves the vanishing gradient problem, enabling learning of long-range temporal dependencies (Hochreiter &amp; Schmidhuber, 1997).</p>
+
+        <h3 style="margin-top:14px;">Hyperparameters</h3>
+        <table style="font-size:13px;">
+          <tr><td>LSTM layers</td><td class="num">2</td></tr>
+          <tr><td>Hidden size</td><td class="num">64</td></tr>
+          <tr><td>Dropout</td><td class="num">0.2</td></tr>
+          <tr><td>Output</td><td>Linear(64, 1)</td></tr>
+          <tr><td><strong>Parameters</strong></td><td class="num"><strong>52,801</strong></td></tr>
+          <tr><td>Training time</td><td class="num">56.1 s</td></tr>
+        </table>
+      </div>
+      <div class="col" style="align-items:center; justify-content:center;">
+        <div class="arch-box">
+          <div class="layer">Input (batch, 60, 10)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">LSTM Layer 1 (hidden=64)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">Dropout (0.2)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">LSTM Layer 2 (hidden=64)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">Last timestep hidden state</div>
+          <span class="arr">&darr;</span>
+          <div class="layer output">Linear(64, 1) &rarr; ActivePower</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">8 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 8: Transformer Model                                    -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="8">
+  <h2>8. Transformer &mdash; Architecture &amp; Training</h2>
+  <div class="content">
+    <div class="cols">
+      <div class="col">
+        <h3>How Transformers work</h3>
+        <p class="small">Transformers replace recurrence with <strong>multi-head self-attention</strong>, allowing each position to attend to all others in constant path length (Vaswani et al., 2017).</p>
+        <ul class="small" style="margin-top:6px;">
+          <li><strong>Self-attention</strong> &mdash; computes weighted relationships across all timesteps in parallel</li>
+          <li><strong>Positional encoding</strong> &mdash; sinusoidal signals inject order information (no inherent sequence notion)</li>
+          <li><strong>Feedforward layers</strong> &mdash; per-position nonlinear transformations</li>
+        </ul>
+
+        <h3 style="margin-top:14px;">Hyperparameters</h3>
+        <table style="font-size:13px;">
+          <tr><td>d_model</td><td class="num">64</td></tr>
+          <tr><td>Attention heads</td><td class="num">4</td></tr>
+          <tr><td>Encoder layers</td><td class="num">2</td></tr>
+          <tr><td>Feedforward dim</td><td class="num">128</td></tr>
+          <tr><td>Dropout</td><td class="num">0.1</td></tr>
+          <tr><td><strong>Parameters</strong></td><td class="num"><strong>67,713</strong></td></tr>
+          <tr><td>Training time</td><td class="num">93.0 s</td></tr>
+        </table>
+      </div>
+      <div class="col" style="align-items:center; justify-content:center;">
+        <div class="arch-box">
+          <div class="layer">Input (batch, 60, 10)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">Linear Projection (10 &rarr; 64)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">Positional Encoding (sinusoidal)</div>
+          <span class="arr">&darr;</span>
+          <div class="layer">Transformer Encoder &times;2<br><span style="font-size:11px;">(4-head attention, FFN=128)</span></div>
+          <span class="arr">&darr;</span>
+          <div class="layer">Last timestep representation</div>
+          <span class="arr">&darr;</span>
+          <div class="layer output">Linear(64, 1) &rarr; ActivePower</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">9 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 9: Training Convergence                                 -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="9">
+  <h2>9. Training Convergence</h2>
+  <div class="content">
+    <figure>
+      <img src="images/training_loss.png" alt="Training and test loss curves">
+      <figcaption>Figure 1. Training and test loss (MSE) over 50 epochs. LSTM (left) converges smoothly; Transformer (right) shows early oscillation before stabilizing.</figcaption>
+    </figure>
+    <div class="cols" style="margin-top:8px;">
+      <div class="col">
+        <h3>LSTM</h3>
+        <ul class="small">
+          <li>Rapid convergence; train &amp; test losses track closely from epoch 10</li>
+          <li>Stable plateau with no overfitting</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h3>Transformer</h3>
+        <ul class="small">
+          <li>Higher test loss variance in epochs 5&ndash;20</li>
+          <li>Continued improvement in later epochs; may benefit from more training</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">10 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10: Results Comparison                                  -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="10">
+  <h2>10. Results &mdash; Metrics Comparison</h2>
+  <div class="content">
+    <div class="cols">
+      <div class="col">
+        <table>
+          <thead><tr><th>Metric</th><th>LSTM</th><th>Transformer</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>MAE</td><td class="num">1.0118</td><td class="num best">0.9485</td><td class="small">Transformer</td></tr>
+            <tr><td>MSE</td><td class="num best">3.4894</td><td class="num">3.9477</td><td class="small">LSTM</td></tr>
+            <tr><td>RMSE</td><td class="num best">1.8680</td><td class="num">1.9869</td><td class="small">LSTM</td></tr>
+            <tr><td>R&sup2;</td><td class="num best">0.9003</td><td class="num">0.8872</td><td class="small">LSTM</td></tr>
+          </tbody>
+        </table>
+        <p class="small" style="margin-top:10px;">LSTM wins on 3 of 4 metrics. Transformer has lower MAE, suggesting better average-case accuracy but occasionally larger errors.</p>
+        <figure style="margin-top:8px;">
+          <img src="images/r2_comparison.png" alt="R-squared comparison" style="max-height:140px;">
+          <figcaption>Figure 3. R&sup2; score comparison.</figcaption>
+        </figure>
+      </div>
+      <div class="col">
+        <figure>
+          <img src="images/error_metrics.png" alt="Error metrics comparison" style="max-height:240px;">
+          <figcaption>Figure 2. MAE and RMSE on original MW scale.</figcaption>
+        </figure>
+        <figure>
+          <img src="images/test_loss_comparison.png" alt="Test loss overlay" style="max-height:200px;">
+          <figcaption>Figure 4. Test loss overlay across epochs.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">11 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11: Discussion                                          -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="11">
+  <h2>11. Discussion</h2>
+  <div class="content">
+    <h3>Overall performance</h3>
+    <p>Both models achieve R&sup2; &asymp; 0.90 and RMSE &lt; 2 MW. With a target mean of 27.33 MW, this represents a normalized error (RMSE/mean) of ~7% &mdash; operationally useful for short-term power management.</p>
+
+    <h3 style="margin-top:12px;">Why does LSTM outperform the Transformer here?</h3>
+    <div class="cols" style="margin-top:4px;">
+      <div class="col">
+        <div class="card">
+          <strong>1. Dataset size</strong><br>
+          <span class="small">~40K training sequences is modest for Transformers, which typically need more data to realize their expressiveness (Zeng et al., 2023).</span>
+        </div>
+        <div class="card">
+          <strong>2. Sequential inductive bias</strong><br>
+          <span class="small">LSTMs naturally weight recent observations via the forget gate. For 1-minute EAF data with strong local autocorrelation, this bias is advantageous.</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <strong>3. Parameter efficiency</strong><br>
+          <span class="small">LSTM: 52,801 params, 56s training.<br>Transformer: 67,713 params (+28%), 93s training (+66%).<br>Comparable results with fewer resources.</span>
+        </div>
+        <div class="card">
+          <strong>Practical recommendation</strong><br>
+          <span class="small">For real-time EAF control: prefer LSTM (lower RMSE, faster inference, simpler deployment). Transformer's lower MAE may suit average-case optimization scenarios.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">12 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12: Conclusions & Future Work                           -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="12">
+  <h2>12. Conclusions &amp; Future Work</h2>
+  <div class="content">
+    <h3>Key findings</h3>
+    <ol>
+      <li><strong>Both models are effective</strong> &mdash; R&sup2; &ge; 0.887, RMSE &lt; 2 MW for 1-minute-ahead forecasting of EAF active power.</li>
+      <li><strong>LSTM holds a slight edge</strong> &mdash; outperforms on 3/4 metrics with 22% fewer parameters and 40% less training time.</li>
+      <li><strong>Transformer shows promise</strong> &mdash; lower MAE and continued improvement in later epochs suggest it may benefit from more data or longer training.</li>
+      <li><strong>Feature selection matters</strong> &mdash; reducing 43 columns to 10 physically meaningful features achieved strong performance without overfitting.</li>
+    </ol>
+
+    <h3 style="margin-top:14px;">Future directions</h3>
+    <div class="cols">
+      <div class="col">
+        <ul class="small">
+          <li><strong>Multi-step forecasting</strong> &mdash; predict 5, 15, 30 min ahead using seq2seq architectures</li>
+          <li><strong>Attention interpretability</strong> &mdash; visualize which timesteps and features drive predictions</li>
+          <li><strong>Hybrid architectures</strong> &mdash; CNN-LSTM or CNN-Transformer for local + global patterns</li>
+        </ul>
+      </div>
+      <div class="col">
+        <ul class="small">
+          <li><strong>Efficient Transformers</strong> &mdash; Informer, Autoformer designed for long sequences</li>
+          <li><strong>Online learning</strong> &mdash; adapt to changing conditions (electrode wear, scrap variability)</li>
+          <li><strong>Expanded dataset</strong> &mdash; multi-month data for generalization and robustness</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="slide-number">13 / 14</span>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13: References                                          -->
+<!-- ============================================================ -->
+<div class="slide" data-slide="13">
+  <h2>References</h2>
+  <div class="content">
+    <div class="ref-list">
+      <p>[1] IEA, "Iron and Steel Technology Roadmap," 2020.</p>
+      <p>[2] B. Bowman, K. Kr&uuml;ger, <em>Arc Furnace Physics</em>, Stahleisen, 2009.</p>
+      <p>[3] J. R. Stubbles, "Energy use in the U.S. steel industry," U.S. DOE, 2000.</p>
+      <p>[4] G. C. Montanari et al., "Arc-furnace model for flicker compensation," <em>IEEE Trans. Power Delivery</em>, 9(4), 1994.</p>
+      <p>[5] M. Moghadasian, E. Alenaby, "EAF modeling based on neural networks," <em>Energy Conv. Mgmt.</em>, 52(12), 2011.</p>
+      <p>[6] R. J. Hyndman, G. Athanasopoulos, <em>Forecasting: Principles and Practice</em>, 3rd ed., OTexts, 2021.</p>
+      <p>[7] W. Kong et al., "Short-term residential load forecasting based on LSTM," <em>IEEE Trans. Smart Grid</em>, 10(1), 2019.</p>
+      <p>[8] S. Siami-Namini et al., "A comparison of ARIMA and LSTM," <em>IEEE ICMLA</em>, 2018.</p>
+      <p>[9] A. Vaswani et al., "Attention is all you need," <em>NeurIPS</em>, 2017.</p>
+      <p>[10] H. Zhou et al., "Informer: Beyond efficient transformer," <em>AAAI</em>, 35(12), 2021.</p>
+      <p>[11] B. N. Lim et al., "Temporal Fusion Transformers," <em>Int. J. Forecasting</em>, 37(4), 2021.</p>
+      <p>[12] World Steel Association, "Steel's contribution to a low carbon future," 2020.</p>
+      <p>[13] S. Hochreiter, J. Schmidhuber, "Long short-term memory," <em>Neural Computation</em>, 9(8), 1997.</p>
+      <p>[14] H. Shi et al., "Deep learning for household load forecasting," <em>IEEE Trans. Smart Grid</em>, 9(5), 2018.</p>
+      <p>[15] Y. Zhang et al., "EAF energy prediction with stacked LSTM," <em>IEEE IEEM</em>, 2020.</p>
+      <p>[16] H. Wu et al., "Autoformer," <em>NeurIPS</em>, 34, 2021.</p>
+      <p>[17] S. Li et al., "Enhancing locality of transformer on time series," <em>NeurIPS</em>, 32, 2019.</p>
+      <p>[18] H.-J. Odenthal et al., "Review on EAF modeling and simulation," <em>Steel Research Int.</em>, 89(1), 2018.</p>
+      <p>[19] Z. Wang et al., "Hybrid CNN-LSTM for EAF energy prediction," <em>Applied Energy</em>, 305, 2022.</p>
+      <p>[20] J. Honaker et al., "Amelia II: Missing data," <em>J. Stat. Software</em>, 45(7), 2011.</p>
+      <p>[21] C. Bergmeir, J. M. Ben&iacute;tez, "Cross-validation for time series," <em>Inf. Sciences</em>, 191, 2012.</p>
+      <p>[22] S. Ioffe, C. Szegedy, "Batch normalization," <em>ICML</em>, 2015.</p>
+      <p>[23] D. P. Kingma, J. Ba, "Adam optimizer," <em>ICLR</em>, 2015.</p>
+      <p>[24] A. Zeng et al., "Are Transformers effective for time series forecasting?" <em>AAAI</em>, 37(9), 2023.</p>
+    </div>
+  </div>
+  <span class="slide-number">14 / 14</span>
+</div>
+
+</div><!-- /deck -->
+
+<!-- Navigation hint -->
+<div class="nav-hint">&larr; &rarr; arrow keys to navigate</div>
+
+<script>
+(function () {
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function go(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+    slides[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      go(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      go(current - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      go(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      go(slides.length - 1);
+    }
+  });
+
+  /* Click left/right halves to navigate */
+  document.querySelector('.deck').addEventListener('click', function (e) {
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.5) go(current + 1);
+    else go(current - 1);
+  });
+})();
+</script>
+
+</body>
+</html>
