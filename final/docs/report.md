@@ -171,13 +171,13 @@ The model projects input features to a 64-dimensional space, adds positional enc
 
 Both models were trained for 50 epochs on an NVIDIA GPU. Figure 1 shows the training and test loss curves for each model.
 
-![Figure 1. Training and test loss curves for LSTM (left) and Transformer (right).](../results/training_loss.png)
+![Figure 1. Training and test loss curves for LSTM (left) and Transformer (right).](images/training_loss.png)
 
 *Figure 1. Training and test loss curves for LSTM (left) and Transformer (right). Both models converge within 15--20 epochs, with the LSTM showing smoother convergence and the Transformer exhibiting higher test loss variance in early epochs.*
 
 The LSTM converged faster and more smoothly, with train and test losses closely tracking each other from epoch 10 onward. The Transformer showed more oscillation in test loss during the first 20 epochs before stabilizing. This is consistent with prior observations that Transformers can be less stable on small-to-medium datasets due to the larger number of attention parameters [24].
 
-![Figure 2. Overlay of test loss curves for both models.](../results/test_loss_comparison.png)
+![Figure 2. Overlay of test loss curves for both models.](images/test_loss_comparison.png)
 
 *Figure 2. Test loss comparison. The LSTM achieves a lower and more stable test loss earlier, while the Transformer gradually approaches similar levels by the end of training.*
 
@@ -192,15 +192,15 @@ The LSTM converged faster and more smoothly, with train and test losses closely 
 | RMSE | **1.8680 MW** | 1.9869 MW | LSTM |
 | R-squared | **0.9003** | 0.8872 | LSTM |
 
-![Figure 3. Comparison of all evaluation metrics between models.](../results/metrics_comparison.png)
+![Figure 3. Comparison of all evaluation metrics between models.](images/metrics_comparison.png)
 
 *Figure 3. Bar chart comparing MAE, MSE, RMSE, and R-squared between models.*
 
-![Figure 4. Error metrics comparison (MAE and RMSE only).](../results/error_metrics.png)
+![Figure 4. Error metrics comparison (MAE and RMSE only).](images/error_metrics.png)
 
 *Figure 4. MAE and RMSE comparison on original MW scale. Both models achieve errors well below 2 MW against a target mean of 27.33 MW.*
 
-![Figure 5. R-squared score comparison.](../results/r2_comparison.png)
+![Figure 5. R-squared score comparison.](images/r2_comparison.png)
 
 *Figure 5. R-squared comparison. Both models explain approximately 89--90% of the variance in ActivePower.*
 
@@ -218,7 +218,7 @@ The LSTM's advantage here is likely attributable to several factors:
 
 **Practical implications.** For deployment in a real-time EAF control system, the LSTM would be preferred given its lower RMSE, faster inference, and simpler architecture. The Transformer's lower MAE may be relevant in scenarios where average-case accuracy matters more than worst-case errors.
 
-![Figure 6. Summary comparison table.](../results/summary_table.png)
+![Figure 6. Summary comparison table.](images/summary_table.png)
 
 *Figure 6. Complete model comparison summary including architecture details, training time, and all evaluation metrics.*
 
